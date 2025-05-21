@@ -3,7 +3,7 @@ set -x
 export VLLM_ATTENTION_BACKEND=FLASH_ATTN
 
 # Default values
-MODEL_PATH="$HOME/DeepScaleR-1.5B-Preview"
+MODEL_PATH="/teamspace/studios/this_studio/Qwen3-1.7B-DAPO"
 # Possible values: aime, amc, math, minerva, olympiad_bench
 DATATYPES=("aime")
 OUTPUT_DIR="$HOME"  # Add default output directory
