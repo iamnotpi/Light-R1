@@ -1,152 +1,169 @@
-# Light-R1: Curriculum SFT, DPO and RL for Long COT from Scratch and Beyond
+# Light-R1 Evaluation Usage
+
+1. install deepscaler of this directory into your conda env
+
+2. for all you nodes, activate your deepscaler env and `cd` to this directory and start ray as the below [Multi-Node Training](#multi-node-training-32-gpus)
+
+3. modify your number of nodes, number of samples and other arguments in `./scripts/eval/eval_model.sh`, then run
+```bash
+./scripts/eval/eval_model.sh --model [CHECKPOINT_PATH] --datasets aime aime25 gpqa --output-dir [OUTPUT_DIR]
+```
 
 
+
+
+
+# Original Readme
+<div align="center">
+
+# DeepScaleR
+
+<div>
+🚀 Democratizing Reinforcement Learning for LLMs 🌟
+</div>
+</div>
+<div>
+<br>
 
 <div align="center">
 
-[![paper](https://img.shields.io/badge/PDF-Light--R1-blue?style=for-the-badge)](https://arxiv.org/abs/2503.10460)
-[![wandb](https://img.shields.io/badge/W&B-GRPO--14B-FFBE00?logo=weightsandbiases&style=for-the-badge)](https://wandb.ai/seek4-nus/grpo-r1-share/reports/14B-GRPO--VmlldzoxMTczNzcyMw?accessToken=29hcarwh4qtt4hryx0zpjpkrssu8r7yo9dzm8ufeiejs8bvi3wu7ckq6oohvtjmf)
+[![Github](https://img.shields.io/badge/DeepScaleR-000000?style=for-the-badge&logo=github&logoColor=000&logoColor=white)](https://github.com/agentica-project/deepscaler)
+[![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)](https://pretty-radio-b75.notion.site/DeepScaleR-Surpassing-O1-Preview-with-a-1-5B-Model-by-Scaling-RL-19681902c1468005bed8ca303013a4e2) 
+[![Twitter](https://img.shields.io/badge/Agentica-white?style=for-the-badge&logo=X&logoColor=000&color=000&labelColor=white)](https://x.com/Agentica_)
+[![Hugging Face Collection](https://img.shields.io/badge/Agentica-fcd022?style=for-the-badge&logo=huggingface&logoColor=000&labelColor)](https://huggingface.co/agentica-org)
 
-[![collections](https://img.shields.io/badge/HFCollections-Light--R1-FFD21E?logo=huggingface&style=for-the-badge)](https://huggingface.co/collections/qihoo360/light-r1-67c675125e2443d7d5ed133d)
-[![dataset](https://img.shields.io/badge/HFData-Light--R1--SFTData-FFD21E?logo=huggingface&style=for-the-badge)](https://huggingface.co/datasets/qihoo360/Light-R1-SFTData)
+</div>
 
 </div>
 
 
-### Mar. 12 update: [SOTA 7B](https://huggingface.co/qihoo360/Light-R1-7B-DS) and [SOTA RL 14B](https://huggingface.co/qihoo360/Light-R1-14B-DS) math models out! [Tech report](https://arxiv.org/abs/2503.10460) out!
+## Overview
 
-|Model|Trained From|Release Date|AIME24|AIME25|GPQA|
-| ---- | ---- | ---- | ---- | ---- |---- |
-|DeepSeek-R1-Distill-Qwen-7B|Qwen2.5-Math-7B|25.1.20|55.5|39.2|49.1|
-| [**Light-R1-7B-DS (ours)** 🤗](https://huggingface.co/qihoo360/Light-R1-7B-DS) |DeepSeek-R1-Distill-Qwen-7B|25.3.12|**59.1**|**44.3**|**49.4**|
-|DeepSeek-R1-Distill-Qwen-14B|Qwen2.5-14B|25.1.20|69.7|50.2|59.1|
-| [**Light-R1-14B-DS (ours)** 🤗](https://huggingface.co/qihoo360/Light-R1-14B-DS) |DeepSeek-R1-Distill-Qwen-14B|25.3.12|**74.0**|**60.2**|**61.7**|
-| [**Light-R1-32B-DS (ours)** 🤗](https://huggingface.co/qihoo360/Light-R1-32B-DS) |DeepSeek-R1-Distill-Qwen-32B|25.3.12|**78.1**|**65.9**|**68.0**|
-| [Light-R1-32B (ours) 🤗](https://huggingface.co/qihoo360/Light-R1-32B) |Qwen2.5-32B-Instruct|25.3.4|76.6|64.6|61.8|
-| QwQ-32B |N/A|25.3.6|78.5|69.3|67.7|
+DeepScaleR is an open-source project to fully democratize reinforcement learning (RL) for LLMs and reproduce DeepSeek R1 and OpenAI O1/O3 at scale on real tasks. For all releases, we open source all our efforts here-including training scripts (including hyperparameters), models, dataset, and logs. 
 
-We released SOTA math models across [7B🤗](https://huggingface.co/qihoo360/Light-R1-7B-DS) and [RL-14B🤗](https://huggingface.co/qihoo360/Light-R1-14B-DS) respectively, and also [32B-DS🤗](https://huggingface.co/qihoo360/Light-R1-32B-DS). [Technical report](https://arxiv.org/abs/2503.10460) is also out.
+![](figures/deepscaler.png)
 
-Notably, we made RL work on Light-R1-14B-DS!
-
-<img src="./assets/rl_curve.png" width="400" style="display: block; margin: 0 auto;"/>
+*Figure 1: DeepScaleR 1.5B model's Pass@1 accuracy on AIME2024 as RL training progresses. At step 1040 and 1520, the context length is extended to 16K and 24K. For more details, see our [blog post](https://pretty-radio-b75.notion.site/DeepScaleR-Surpassing-O1-Preview-with-a-1-5B-Model-by-Scaling-RL-19681902c1468005bed8ca303013a4e2).*
 
 
-### Mar.4: Light-R1-32B
-|Model|Trained From|Release Date|AIME24|AIME25|
-| ---- | ---- | ---- | ---- | ---- |
-|DeepSeek-R1-Distill-Llama-70B|Llama-3.3-70B-Instruct|25.1.20|70.0|54.1|
-|DeepSeek-R1-Distill-Qwen-32B|Qwen2.5-32B|25.1.20|72.6|54.9|
-|LIMO (32B)|Qwen2.5-32B-Instruct|25.2.4|56.3|47.1|
-|s1.1-32B|Qwen2.5-32B-Instruct|25.2.8|64.7|47.8|
-|OpenThinker-32B|Qwen2.5-32B-Instruct|25.2.12|66.0|50.9|
-| [**Light-R1-32B (ours)** 🤗](https://huggingface.co/qihoo360/Light-R1-32B) |Qwen2.5-32B-Instruct|25.3.4|**76.6**|**64.6**| 
+## Releases  📰
+
+<strong>[2025/02/10]</strong> We release `DeepScaleR-1.5B-Preview`, a 1.5B model that surpasses O1-Preview and achieves <strong>43.1% Pass@1</strong> on AIME. We achieve this by iteratively scaling Deepseek's GRPO algorithm from 8K→16K->24K context length for thinking. As part of this release, we open-source:
+- 🍗 An In-Depth Blog Post on our [Training Recipe and Insights](https://pretty-radio-b75.notion.site/DeepScaleR-Surpassing-O1-Preview-with-a-1-5B-Model-by-Scaling-RL-19681902c1468005bed8ca303013a4e2)
+- 🤗 HF Model [`DeepScaleR-1.5B-Preview`](https://huggingface.co/agentica-org/DeepScaleR-1.5B-Preview)
+- 🤗 HF Dataset [`DeepScaleR-Preview-Dataset`](https://huggingface.co/datasets/agentica-org/DeepScaleR-Preview-Dataset) / 🗂️  [JSON Dataset](https://github.com/agentica-project/deepscaler/tree/main/deepscaler/data)
+- 📄 [Training Scripts](https://github.com/agentica-project/deepscaler/tree/main/scripts/train)—Exact hyperparameters we used to achieve 43.1% on AIME.
+- 📈 [Wandb Training Logs](https://wandb.ai/mluo/deepscaler-1.5b)—All training runs and ablations.
+  - Due to Wandb migration bugs, the 8k training run is compressed to 400-500 steps. The data is identical, but our original run was 1600 steps.
+- 🔎 [Evaluation Logs](https://drive.google.com/file/d/1V_rYKoL35WmubbmWN6PeFg4zo5QOug8X/view?pli=1)—DeepScaleR, Deepseek Distill, and Still 1.5B generations over 1000+ math problems.
 
 
-While much work has been open-sourced trying to reproduce DeepSeek-R1 on models of 72B or less, **none** achieves similar performance on the hard math competition AIME24 as DeepSeek-R1-Distill-Qwen-32B's score 72.6.
+## Getting Started 🎯
+### Installation
+```bash
+# Recommend Python 3.10.
+cd deepscaler
+pip install -e ./verl
+pip install -e .
+```
 
-We introduce Light-R1-32B, which achieves 76.6 on AIME24 training from Qwen2.5-32B-Instruct. Starting from models without long COT (*from scratch* in terms of R1) and training on decontaminated math data, we distilled DeepSeek-R1 with curriculum SFT & DPO to **surpass DeepSeek-R1-Distill-Qwen-32B** on AIME24 & 25, and improved further with model merging.
+### Data
+Our raw training data in `deepscaler/data/[train|test]`, along with preprocessing scripts. To convert the raw data into Parquet files for training, run:
+```python
+# Output parquet files in data/*.parquet.
+python scripts/data/deepscaler_dataset.py
+```
 
-More importantly, 
-besides the state-of-the-art from-scratch model Light-R1-32B, we also released on Day 1 all training datasets of our curriculum SFT & DPO and training code based on [360-LLaMA-Factory](https://github.com/Qihoo360/360-LLaMA-Factory).
-Estimated training time on 12 x H800 machines takes no more than 6 hours --- around \$1000.
+### Training Scripts
 
-We believe Light-R1 represents a practical way of training strong long COT models from scratch (from models without long COT). While we are working to further improve our models with RL, curriculum SFT & DPO facilitates more control along the pipeline and is more cost-friendly.
+We provide training scripts for both single-node and multi-node setups in `scripts/train/`. Our runs' Wandb logs are available [here](https://wandb.ai/mluo/deepscaler-1.5b).
 
-With the rapid development of training and inference techniques, we hope to see more accessible long-COT models in the near future and Light-R1 provides a validated transparent way to train them in at least specialized domains.
+#### Single-Node Training (8 GPUs)
+Our 8k context script runs on a single node with 8 A100-80GB GPUs:
+```bash
+# Set XFormers backend to avoid CUDA errors
+export VLLM_ATTENTION_BACKEND=XFORMERS
+# Run 8K context length training
+export MODEL_PATH="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+./scripts/train/run_deepscaler_1.5B_8K.sh --model $MODEL_PATH
+```
 
-<img src="./assets/wechat-group-flop.JPG" width="200" style="display: block; margin: 0 auto;"/>
+#### Multi-Node Training (32 GPUs)
 
-## Release Details
+Our long-context runs (16K/24K) are distributed across 4 nodes with 8 A100-80GB GPUs each. To run, follow these steps:
 
-- Light-R1-32B model on [🤗 huggingface](https://huggingface.co/qihoo360/Light-R1-32B)
+1. On the head node:
+```bash
+# Set XFormers backend to avoid CUDA errors
+export VLLM_ATTENTION_BACKEND=XFORMERS
+# Start Ray head node
+ray start --head
+```
 
-- Curriculum [🤗SFT](https://huggingface.co/datasets/qihoo360/Light-R1-SFTData) & [🤗DPO](https://huggingface.co/datasets/qihoo360/Light-R1-DPOData) datasets (all our training data!)
+2. On each worker node:
+```bash
+# Set XFormers backend to avoid CUDA errors
+export VLLM_ATTENTION_BACKEND=XFORMERS
+# Connect to head node (replace with your head node's address)
+ray start --address=[RAY_ADDRESS]
+```
 
-- Training scripts based on [360-LLaMA-Factory](https://github.com/Qihoo360/360-LLaMA-Factory) in [train-scripts](./train-scripts/)
+3. Finally, on the head node, run the training script:
+```bash
+# Run 16K or 24K context length training
+./scripts/train/run_deepscaler_1.5B_[16K|24K].sh --model [CHECKPOINT_PATH]
+```
+We welcome the community to try out different models, context legnths, and RL parameters in the training scripts!
 
-- Evaluation code based on [DeepScaleR](https://github.com/agentica-project/deepscaler) in [deepscaler-release](./deepscaler-release/)
-    - along with evaluation logs of Light-R1-32B (e.g. [AIME24](https://huggingface.co/qihoo360/Light-R1-32B/blob/main/evaluation-results.aime24.json))
-    - all our reported scores are averaged over 64 runs; public models' scores are taken from their evaluation results and if not present, averaged over 64 runs; we found that averaging over 16 runs sometimes leads to deviation over 2-3 points across different runs
+### Ablations
 
-- Technical report work in progress
+Finally, we provide ablations for the 2k/4k context runs in `scripts/ablation/`. To run:
+```bash
+./scripts/ablation/run_deepscaler_1.5B_[2k|4k].sh --model [CHECKPOINT_PATH]
+```
 
-## Inference Notes
+## Evaluation
 
-Light-R1-32B does not always think as its thinking capabilities are trained only with math data.
+Our evaluation scripts automatically runs vLLM to generate 16 samples for each problem. To run our evaluation scripts, run:
+```bash
+./scripts/eval/eval_model.sh --model [CHECKPOINT_PATH] --datasets [DATASET1] [DATASET2] --output-dir [OUTPUT_DIR]
+```
 
-We forced Light-R1 to think by hard-coding `<think>` in the chat template right before the model is supposed to generate output, as suggested by [DeepSeek](https://x.com/deepseek_ai/status/1890324295181824107).
+We report Pass@1 accuracy averaged over 16 samples for each problem. Notably, our `DeepScaleR-1.5B-Preview` surpasses many open-source 7B models! Our evaluation logs are available [here](https://drive.google.com/file/d/1V_rYKoL35WmubbmWN6PeFg4zo5QOug8X/view?pli=1).
 
-[vLLM](https://github.com/vllm-project/vllm) or [SGLang](https://github.com/sgl-project/sglang) are suggested for inference.
-Light-R1-32B inherits Qwen models' chat template with `<think>` and `</think>` added as special tokens and `<think>` hard-coded to force thinking.
+| Model | AIME 2024 | MATH 500 | AMC 2023 | Minerva Math | OlympiadBench | Avg. |
+|-------|-----------|-----------|-----------|--------------|---------------|------|
+| 2.5-7B-Instruct | 13.3 | 79.8 | 50.6 | 34.6 | 40.7 | 43.8 |
+| rStar-Math-7B | 26.7 | 78.4 | 47.5 | - | 47.1 | - |
+| Eurus-2-7B-PRIME | 26.7 | 79.2 | 57.8 | 38.6 | 42.1 | 48.9 |
+| Qwen2.5-7B-SimpleRL | 26.7 | 82.4 | 62.5 | <strong>39.7</strong> | 43.3 | 50.9 |
+| DeepSeek-R1-Distill-Qwen-1.5B | 28.8 | 82.8 | 62.9 | 26.5 | 43.3 | 48.9 |
+| Still-1.5B | 32.5 | 84.4 | 66.7 | 29.0 | 45.4 | 51.6 |
+| <strong>DeepScaleR-1.5B-Preview</strong> | <strong>43.1</strong> | <strong>87.8</strong> | <strong>73.6</strong> | 30.2 | <strong>50.0</strong> | <strong>57.0</strong> |
+| O1-Preview | 40.0 | 81.4 | - | - | - | - |
 
-
-## Post-Training through Curriculum SFT & DPO
-
-|  | AIME24 pass@1 (64 average) | AIME25 | GPQA Diamond |
-| --- | --- | --- | --- |
-| Qwen2.5-32B-Instruct | 16.6 | 13.6 | 48.8 |
-| DeepSeek-R1-Distill-Qwen-32B | 72.6 | 54.9 | 62.1 |
-| Light-R1-SFT-stage1 | 69.0 | 57.4 | 64.3 |
-| Light-R1-SFT-stage2 | 73.0 | 64.3 | 60.6 |
-| Light-R1-DPO | 75.8 | 63.4 | 61.8 |
-| Light-R1-32B | 76.6 | 64.6 | 61.8 | 
-
-We adopted a curriculum learning approach with SFT and DPO.
-
-### Math Data Sources
-Training questions are collected from public math datasets including [OpenR1-Math-220k](open-r1/OpenR1-Math-220k), [OpenThoughts-114k](https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k), [LIMO](https://huggingface.co/datasets/GAIR/LIMO), [OpenMathInstruct-2](https://huggingface.co/datasets/nvidia/OpenMathInstruct-2), [s1K-1.1](https://huggingface.co/datasets/simplescaling/s1K-1.1), [Omni-MATH](https://huggingface.co/datasets/KbsdJames/Omni-MATH), [hendrycks_math](https://hf-mirror.com/datasets/baber/hendrycks_math) and AIME (up to 2023).
-We decontaminated the questions against common Reasoning benchmarks such as AIME24/25, MATH-500 and GPQA Diamond.
-
-### Curriculum SFT & DPO
-We collected responses from DeepSeek-R1 on these questions and filtered them based on verification and difficulty levels rated by sampling [DeepScaleR-1.5B-Preview](https://huggingface.co/agentica-org/DeepScaleR-1.5B-Preview), forming a 76k dataset for **SFT stage1**.
-
-After SFT stage1, a more difficult set, mostly filtered from the 76k dataset, was constructed with 3k data for **SFT stage2**.
-> This stage2 data could boost DeepSeek-R1-Distill-Qwen-32B from 72.6/54.9 to 0.779/0.675 on AIME 24/25.
-
-Then we sampled Light-R1-SFT-stage2's responses after SFT stage2, filtered correct and incorrect ones for each question and construct DPO pairs based on verification results and DeepSeek-R1's responses.
-
-**DPO**(or [NCA](https://github.com/thu-ml/Noise-Contrastive-Alignment)) is performed on top of SFT stage2 with sequence parallelism in [360-LLaMA-Factory](https://github.com/Qihoo360/360-LLaMA-Factory).
-
-The above training steps are fairly fast and are estimated to finish in less than 6 hours on 12 x H800 machines, hence the estimate of \$1000.
-
-### Model Merging
-Finally, we merged models of SFT-stage2, DPO and another DPO version with AIME24 score 74.7.
-The two DPO versions differ in that one of the data has special tokens skipped in rejected responses. Interestingly, the resulting version also exhibits improvement.
-
-We observed stepwise improvement in our approach and intermediate evaluation results of each stage are listed in the table above.
-On the GPQA evaluation of scientific questions we didn't train on at all, math-specialized training has led to some degree of forgetting. However, Light-R1-32B still demonstrates strong generalization ability. 
-
-
-
-## Data Decontamination
-
-We carefully evaluated data contamination of several open-sourced datasets.
-While certain contamination may be [inevitable during pre-training](https://x.com/DimitrisPapail/status/1888325914603516214),
-it is unacceptable for post-training to compare on benchmarks.
-MATH-500 is somewhat compromised with tens of questions that are identical or only numbers changed. AIME 24 and 25 stay intact but we have to pay special attention when we incorporate AIME data up to 2023.
-
-Light-R1 did thorough decontamination with exact matching (excluding digits) and N-gram (N=32) matching.
+To replicate our reported numbers for `DeepScaleR-1.5B-Preview`, run:
+```bash
+./scripts/eval/eval_model.sh --model agentica-org/DeepScaleR-1.5B-Preview --datasets aime math amc minerva olympiad_bench --output-dir $HOME/DeepScaleR-1.5B-Preview
+```
 
 
-## License & Acknowledgements
+## Acknowledgements
 
-All released materials of this project follow the open-source license Apache 2.0.
-
-Our training experiments are powered by [360-LLaMA-Factory](https://github.com/Qihoo360/360-LLaMA-Factory).
-Our evaluation scripts are based on [DeepScaleR](https://github.com/agentica-project/deepscaler) and therefore [verl](https://github.com/volcengine/veRL).
-
-Light-R1-32B is trained from [Qwen2.5-32B-Instruct](https://huggingface.co/Qwen/Qwen2.5-32B-Instruct).
-Training data are collected from various public sources.
+- Our training experiments are powered by our heavily modified fork of [Verl](https://github.com/agentica-project/verl), an open-source RLHF library.
+- Our model is trained on top of [`DeepSeek-R1-Distill-Qwen-1.5B`](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B).
+- Our work is done as part of  [Berkeley Sky Computing Lab](https://skycomputing.berkeley.edu/) and [Berkeley AI Research](https://bair.berkeley.edu/).
 
 
 ## Citation
 
 ```bibtex
-@article{wen2025light,
-  title={Light-R1: Curriculum SFT, DPO and RL for Long COT from Scratch and Beyond},
-  author={Wen, Liang and Cai, Yunke and Xiao, Fenrui and He, Xin and An, Qi and Duan, Zhenyu and Du, Yimin and Liu, Junchen and Tang, Lifu and Lv, Xiaowei and Zou, Haosheng and Deng, Yongchao and Jia, Shousheng and Zhang, Xiangzheng},
-  journal={arXiv preprint arXiv:2503.10460},
+@misc{deepscaler2025,
+  title={DeepScaleR: Surpassing O1-Preview with a 1.5B Model by Scaling RL},
+  author={Michael Luo and Sijun Tan and Justin Wong and Xiaoxiang Shi and William Tang and Manan Roongta and Colin Cai and Jeffrey Luo and Tianjun Zhang and Erran Li and Raluca Ada Popa and Ion Stoica},
+  year={2025},
+  howpublished={\url{https://pretty-radio-b75.notion.site/DeepScaleR-Surpassing-O1-Preview-with-a-1-5B-Model-by-Scaling-RL-19681902c1468005bed8ca303013a4e2}},
+  note={Notion Blog}
   year={2025}
 }
 ```
