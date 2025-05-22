@@ -3,7 +3,7 @@ set -x
 export VLLM_ATTENTION_BACKEND=FLASH_ATTN
 
 # Default values
-MODEL_PATH="/teamspace/studios/this_studio/Qwen3-1.7B-DAPO"
+MODEL_PATH="/home/ubuntu/Light-R1/Qwen3-1.7B-SFT"
 # Possible values: aime, amc, math, minerva, olympiad_bench
 DATATYPES=("aime")
 OUTPUT_DIR="$HOME"  # Add default output directory
@@ -57,6 +57,7 @@ for DATA_TYPE in "${DATATYPES[@]}"; do
         rollout.top_p=0.95 \
         rollout.gpu_memory_utilization=0.9 \
         rollout.tensor_model_parallel_size=1 \
+        rollout.max_num_batched_tokens=36864 \
         +data.skip_format_reward=True
 done
 # +data.skip_format_reward=True是默认行为，跳过校验答案正确性时的格式检查，没<think>也没事

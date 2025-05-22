@@ -24,6 +24,7 @@ with open(os.path.join(version_folder, "verl/version/version")) as f:
     __version__ = f.read().strip()
 
 install_requires = [
+    "vllm",
     "accelerate",
     "codetiming",
     "datasets",
