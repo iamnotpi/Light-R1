@@ -171,10 +171,10 @@ def main(config):
     
     output_dir = os.path.dirname(config.data.output_path)
     # Compute evaluation metrics
-    prompts = dataset[config.data.prompt_key]
+    prompts = dataset['prompt']
     responses = dataset['responses']  # Using the generated responses
-    data_sources = dataset[config.data.data_source_key]
-    reward_model_data = dataset[config.data.reward_model_key]
+    data_sources = dataset['data_source']
+    reward_model_data = dataset['reward_model']
 
     passes = 0
     total = len(dataset)
@@ -243,12 +243,12 @@ def main(config):
 
 # Add the select_reward_fn from main_eval.py
 def select_reward_fn(data_source):
-    if data_source == 'lighteval/MATH':
-        from verl.utils.reward_score import math
-        return math.compute_score
-    else:
-        from rllm.rewards.rl_reward import rllm_reward_fn
-        return rllm_reward_fn
+    # if data_source == 'lighteval/MATH':
+    from verl.utils.reward_score import math
+    return math.compute_score
+    # else:
+    #     from rllm.rewards.rl_reward import rllm_reward_fn
+    #     return rllm_reward_fn
 
 if __name__ == '__main__':
     main()
